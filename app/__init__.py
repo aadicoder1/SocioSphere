@@ -12,12 +12,13 @@ def create_app():
     
     db.init_app(app)
     from .models import User
-    
+    from .report import report_bp
     from .auth import auth
     from .routes import main
 
     app.register_blueprint(auth)
     app.register_blueprint(main)
+    app.register_blueprint(report_bp)
     
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'

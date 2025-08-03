@@ -8,5 +8,23 @@
     <h2>Welcome, {{ name }} (NGO)</h2>
     <p>View public complaints and respond to them.</p>
     <a href="/logout">Logout</a>
+
+    <h2>Reported Issues</h2>
+
+{% if issues %}
+  <ul>
+    {% for issue in issues %}
+      <li>
+        <strong>{{ issue.title }}</strong><br>
+        {{ issue.description }}<br>
+        <em>Reported by User : {{ issue.user_id }}</em>
+        <hr>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No issues reported yet.</p>
+{% endif %}
+
 </body>
 </html>

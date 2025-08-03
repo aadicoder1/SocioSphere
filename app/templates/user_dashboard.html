@@ -3,8 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>User Dashboard</title>
+  <style>
+    .flash-messages {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
+
+ <!-- Flash Messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <script>
+  setTimeout(function() {
+    const flashBox = document.querySelector('.flash-messages');
+    if (flashBox) {
+      flashBox.style.display = 'none';
+    }
+  }, 3000); // 3 seconds
+</script>
+
     <h2>Welcome, {{ name }} (User)</h2>
     <p>This is your dashboard to raise complaints and track welfare requests.</p>
     <a href="/logout">Logout</a>
