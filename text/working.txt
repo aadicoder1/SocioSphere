@@ -1,0 +1,7 @@
+Flask
+
+Flask-WTF (for forms)
+
+Flask-Login (authentication)
+
+Werkzeug (for password hashing)

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - SocioSphere</title>
+</head>
+<body>
+    <h2>Create an Account</h2>
+    <form method="POST">
+        <label>Username:</label><br>
+        <input type="text" name="username"><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email"><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password"><br>
+
+        <label>Role:</label><br>
+        <select name="role">
+            <option value="user">User</option>
+            <option value="ngo">NGO</option>
+        </select><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login</a></p>
+</body>
+</html>
