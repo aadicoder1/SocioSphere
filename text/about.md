@@ -1,6 +1,6 @@
 # 🌐 SocioSphere
 
-### Tagline: *"Spot It. Report It. Fix It."*
+### Tagline: *"Connecting Communities, Empowering Change."*
 
 ---
 
