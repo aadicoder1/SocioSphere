@@ -28,7 +28,24 @@ def ngo_dashboard():
         issues = IssueReport.query.filter_by(status=filter_status).order_by(IssueReport.id.desc()).all()
     else:
         issues = IssueReport.query.order_by(IssueReport.id.desc()).all()
-    return render_template('ngo_dashboard.html', issues=issues , filter_status=filter_status)
+    # Prepare data for map (lat, lng, title, address)
+    issues_json = [
+        {
+            "title": issue.title,
+            "location": issue.location,
+            "latitude": issue.latitude,
+            "longitude": issue.longitude
+        }
+        for issue in issues
+        if issue.latitude and issue.longitude  # Only include if location is available
+    ]
+    return render_template(
+        'ngo_dashboard.html',
+        issues=issues,
+        filter_status=filter_status,
+        issues_json=issues_json  # <-- Pass to template
+    )
+
 
 
 @main.route('/update_status/<int:issue_id>', methods=['POST'])

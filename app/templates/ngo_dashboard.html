@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>NGO Dashboard - Reported Issues</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -50,6 +51,12 @@
     .filter-form {
       margin-bottom: 25px;
     }
+    #ngo-map {
+      height: 500px;
+      width: 100%;
+      margin: 20px 0;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
@@ -59,6 +66,7 @@
 
   <h2>Reported Issues</h2>
 
+  <!-- Filter Form -->
   <form method="get" action="{{ url_for('main.ngo_dashboard') }}" class="filter-form">
     <label for="status-filter">Filter by status:</label>
     <select id="status-filter" name="status" onchange="this.form.submit()">
@@ -69,6 +77,30 @@
     </select>
   </form>
 
+  <!-- 🌍 Single Map with Markers for All Issues -->
+  <div id="ngo-map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('ngo-map').setView([28.47, 77.49], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 18,
+    }).addTo(map);
+
+    const issues = {{ issues_json | safe }};
+
+    issues.forEach(issue => {
+      if (issue.latitude && issue.longitude) {
+        L.marker([issue.latitude, issue.longitude])
+          .addTo(map)
+          .bindPopup(`<b>${issue.title}</b><br>${issue.location}`);
+      }
+    });
+  </script>
+
+  <!-- 📋 List of Issues -->
   {% if issues %}
     <ul>
       {% for issue in issues %}
@@ -78,6 +110,10 @@
 
           {% if issue.image_filename %}
             <img src="{{ url_for('static', filename='uploads/' + issue.image_filename) }}" alt="Image for {{ issue.title }}" />
+          {% endif %}
+
+          {% if issue.location %}
+            <p><strong>Location:</strong> {{ issue.location }}</p>
           {% endif %}
 
           <p>Status: <strong>{{ issue.status }}</strong></p>

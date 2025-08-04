@@ -20,12 +20,19 @@ def report_issue():
             filename = secure_filename(image.filename)
             image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
             image_filename = filename
+            
+        location = request.form.get('location')
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
 
         new_report = IssueReport(
             user_id=current_user.id,
             title=title,
             description=description,
-            image_filename=image_filename
+            image_filename=image_filename,
+            location=location,
+            latitude=latitude,
+            longitude=longitude
         )
 
         db.session.add(new_report)
