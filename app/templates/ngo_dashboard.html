@@ -1,30 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NGO Dashboard</title>
+  <meta charset="UTF-8" />
+  <title>NGO Dashboard - Reported Issues</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px 40px;
+    }
+    h2 {
+      color: #333;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
+    img {
+      max-width: 300px;
+      max-height: 200px;
+      display: block;
+      margin: 10px 0;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    form {
+      margin-top: 8px;
+    }
+    select {
+      padding: 5px;
+      font-size: 14px;
+    }
+    button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-left: 8px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      border-radius: 3px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .filter-form {
+      margin-bottom: 25px;
+    }
+  </style>
 </head>
 <body>
-    <h2>Welcome, {{ name }} (NGO)</h2>
-    <p>View public complaints and respond to them.</p>
-    <a href="/logout">Logout</a>
+  <h2>Welcome, {{ name }} (NGO)</h2>
+  <p>View public complaints and respond to them.</p>
+  <a href="{{ url_for('auth.logout') }}">Logout</a>
 
-    <h2>Reported Issues</h2>
+  <h2>Reported Issues</h2>
 
-{% if issues %}
-  <ul>
-    {% for issue in issues %}
-      <li>
-        <strong>{{ issue.title }}</strong><br>
-        {{ issue.description }}<br>
-        <em>Reported by User : {{ issue.user_id }}</em>
-        <hr>
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No issues reported yet.</p>
-{% endif %}
+  <form method="get" action="{{ url_for('main.ngo_dashboard') }}" class="filter-form">
+    <label for="status-filter">Filter by status:</label>
+    <select id="status-filter" name="status" onchange="this.form.submit()">
+      <option value="">All</option>
+      <option value="Pending" {% if filter_status == 'Pending' %}selected{% endif %}>Pending</option>
+      <option value="In Progress" {% if filter_status == 'In Progress' %}selected{% endif %}>In Progress</option>
+      <option value="Resolved" {% if filter_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+    </select>
+  </form>
 
+  {% if issues %}
+    <ul>
+      {% for issue in issues %}
+        <li>
+          <strong>{{ issue.title }}</strong><br />
+          {{ issue.description }}<br />
+
+          {% if issue.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + issue.image_filename) }}" alt="Image for {{ issue.title }}" />
+          {% endif %}
+
+          <p>Status: <strong>{{ issue.status }}</strong></p>
+
+          <form method="POST" action="{{ url_for('main.update_status', issue_id=issue.id) }}" onsubmit="return confirm('Are you sure you want to update the status?');">
+            <select name="status" required>
+              <option value="Pending" {% if issue.status == 'Pending' %}selected{% endif %}>Pending</option>
+              <option value="In Progress" {% if issue.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+              <option value="Resolved" {% if issue.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+            <button type="submit">Update</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No issues reported yet.</p>
+  {% endif %}
 </body>
 </html>

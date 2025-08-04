@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from .extensions import db
 from flask_login import LoginManager
@@ -9,6 +10,11 @@ def create_app():
     app.config['SECRET_KEY'] = 'supersecretkey'  # for sessions & auth
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    
     
     db.init_app(app)
     from .models import User
