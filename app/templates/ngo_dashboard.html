@@ -60,12 +60,27 @@
   </style>
 </head>
 <body>
-  <h2>Welcome, {{ name }} (NGO)</h2>
+  
+
+
+</body>
+</html>
+
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align:center; max-width:90%;">
+
+  <div style="border-radius:10px;padding:2px;background-color:rgba(149, 184, 255, 0.5);text-align:left;"><div style="margin-left:5%">
+  <h2>Welcome, {{ name }} </h2>
   <p>View public complaints and respond to them.</p>
-  <a href="{{ url_for('auth.logout') }}">Logout</a>
-  <a href="{{ url_for('main.ngo_events') }}">View Events By NGO</a>
+  <a href="{{ url_for('main.ngo_events') }}" class="btn btn-success" style="font-size: 16px; margin-top: 20px;text-decoration: none;">
+   Events By NGO</a><br><br><br>
+  </div></div>
 
 
+ <hr>
   <h2>Reported Issues</h2>
 
   <!-- Filter Form -->
@@ -79,8 +94,9 @@
     </select>
   </form>
 
+ 
   <!-- 🌍 Single Map with Markers for All Issues -->
-  <div id="ngo-map"></div>
+  <div id="ngo-map" style="width:100%;"></div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -100,15 +116,17 @@
           .bindPopup(`<b>${issue.title}</b><br>${issue.location}`);
       }
     });
-  </script>
-
+  </script><hr><br>
+  
+<div style="text-align:left;border-radius:10px;border:0.075em solid;border-color:rgba(138, 138, 138, 1);">
+  <div style="margin-left:5%;">
   <!-- 📋 List of Issues -->
   {% if issues %}
     <ul>
       {% for issue in issues %}
         <li>
-          <strong>{{ issue.title }}</strong><br />
-          {{ issue.description }}<br />
+          <strong>Task: {{ issue.title }}</strong><br />
+          <strong>Description:</strong> {{ issue.description }}<br/>
 
           {% if issue.image_filename %}
             <img src="{{ url_for('static', filename='uploads/' + issue.image_filename) }}" alt="Image for {{ issue.title }}" />
@@ -156,6 +174,7 @@
     </div>
   {% endif %}
 </div>
-
-</body>
-</html>
+</div>
+</div>
+</div>
+{% endblock %}

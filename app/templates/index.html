@@ -1,12 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SocioSphere</title>
-</head>
-<body>
-    <h1>Welcome to SocioSphere</h1>
-    <p>Your gateway to social good!</p>
-    <a href="/login">Login</a> | 
-    <a href="/register">Register</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align:center; max-width:75%;">
+    <h1 style="font-size:50px;">Welcome to SocioSphere</h1>
+    <p style="font-size:25px;">Your gateway to social good!</p>
+
+    <!-- Flash messages (success, error) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="mb-3">
+            <a href="/login" class="btn btn-primary mb-3" style="text-decoration:none;">Login</a>
+        
+            <a href="/register" class="btn btn-primary mb-3" style="text-decoration:none;">Register</a>
+        </div><br>
+</div>
+{% endblock %}

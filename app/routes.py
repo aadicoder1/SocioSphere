@@ -24,7 +24,10 @@ def index():
 @main.route('/user/dashboard')
 @login_required
 def user_dashboard():
-    return render_template('user_dashboard.html', name=current_user.username)
+    if current_user.role != 'user':
+        return redirect(url_for('main.ngo_dashboard'))
+    else:
+        return render_template('user_dashboard.html', name=current_user.username)
 
 from flask_paginate import get_page_parameter
 
@@ -63,6 +66,7 @@ def ngo_dashboard():
 
     return render_template(
         'ngo_dashboard.html',
+        name=current_user.username,
         issues=issues,
         pagination=pagination,
         filter_status=filter_status,
@@ -145,7 +149,12 @@ def create_event():
 
 
 @main.route('/events')
+@login_required
 def view_events():
+    if current_user.role != 'user':
+        #flash('Access denied: Only users can view this page.', 'danger')
+        return redirect(url_for('main.ngo_events'))
+    
     events = NGOEvent.query.order_by(NGOEvent.date).all()
     return render_template('view_events.html', events=events)
 

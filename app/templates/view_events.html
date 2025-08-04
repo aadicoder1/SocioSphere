@@ -1,22 +1,24 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block title %}View Events{% endblock %}
 
 {% block content %}
-<h2>Upcoming Events</h2>
+<div class="container">
+    <h2>🌍 Community Events</h2>
+    
+    {% for event in events %}
+        <div class="event-card">
+            <h3>{{ event.title }}</h3>
+            <p><strong>Date:</strong> {{ event.date }}</p>
+            <p><strong>Location:</strong> {{ event.location }}</p>
+            <p>{{ event.description }}</p>
 
-{% for event in events %}
-    <div class="event">
-        <h3>{{ event.title }}</h3>
-        <p><strong>Date:</strong> {{ event.date }}</p>
-        <p><strong>Location:</strong> {{ event.location }}</p>
-        <p>{{ event.description }}</p>
-        {% if event.image_filename %}
-            <img src="{{ url_for('static', filename='uploads/' + event.image_filename) }}" alt="Event image" width="200">
-        {% endif %}
-        <hr>
-    </div>
-{% endfor %}
-
-{% if not events %}
-    <p>No upcoming events yet.</p>
-{% endif %}
+            {% if event.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}"
+                     alt="Event Image" style="max-width: 100%; height: auto;">
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No events available yet.</p>
+    {% endfor %}
+</div>
 {% endblock %}

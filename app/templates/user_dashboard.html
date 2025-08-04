@@ -1,42 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User Dashboard</title>
-  <style>
-    .flash-messages {
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      background-color: #f0f0f0;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
+{% extends "base.html" %}
 
- <!-- Flash Messages -->
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="flash-messages">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+{% block content %}
+<div class="container">
+  <div class="card">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-  <script>
-  setTimeout(function() {
-    const flashBox = document.querySelector('.flash-messages');
-    if (flashBox) {
-      flashBox.style.display = 'none';
-    }
-  }, 3000); // 3 seconds
-</script>
+    <script>
+      setTimeout(function() {
+        const flashBox = document.querySelector('.flash-messages');
+        if (flashBox) {
+          flashBox.style.display = 'none';
+        }
+      }, 3000);
+    </script>
 
-    <h2>Welcome, {{ name }} (User)</h2>
+    <h2>Welcome, {{ name }}</h2>
     <p>This is your dashboard to raise complaints and track welfare requests.</p>
-    <a href="/logout">Logout</a>
-</body>
-</html>
+    <br><br>
+    <a class="btn" href="{{ url_for('main.view_events') }}">Explore Events</a>
+    <br><br><br>
+  </div>
+</div>
+{% endblock %}

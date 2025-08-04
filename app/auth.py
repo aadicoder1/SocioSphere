@@ -30,24 +30,35 @@ def register():
     return render_template('register.html')
 
 
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
 
         user = User.query.filter_by(email=email).first()
+
         if not user or not check_password_hash(user.password, password):
-            flash("Invalid credentials!")
+            flash("Invalid credentials!", "danger")
             return redirect(url_for('auth.login'))
 
         login_user(user)
-        if user.role == 'ngo':
+        flash('Login successful!', 'success')
+
+        # Optional: Redirect to 'next' if user came from a protected page
+        next_page = request.args.get('next')
+
+        if next_page:
+            return redirect(next_page)
+        elif user.role == 'ngo':
             return redirect(url_for('main.ngo_dashboard'))
         else:
             return redirect(url_for('main.user_dashboard'))
 
     return render_template('login.html')
+
 
 
 @auth.route('/logout')
