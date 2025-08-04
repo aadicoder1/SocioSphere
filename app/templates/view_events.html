@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Upcoming Events</h2>
+
+{% for event in events %}
+    <div class="event">
+        <h3>{{ event.title }}</h3>
+        <p><strong>Date:</strong> {{ event.date }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <p>{{ event.description }}</p>
+        {% if event.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + event.image_filename) }}" alt="Event image" width="200">
+        {% endif %}
+        <hr>
+    </div>
+{% endfor %}
+
+{% if not events %}
+    <p>No upcoming events yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,16 +1,24 @@
-from flask import Blueprint, render_template, redirect,url_for,flash,request
+from flask import Blueprint, render_template, redirect,url_for,flash,request,current_app
 from flask_login import login_required, current_user
-from app.models import IssueReport
+from app.models import IssueReport, NGOEvent
 from .extensions import db
 from flask_paginate import get_page_parameter
+import os
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 
 
 main = Blueprint('main', __name__)
 
+
+
+
 @main.route('/')
 def index():
     return render_template('index.html')
+
+
 
 
 @main.route('/user/dashboard')
@@ -18,8 +26,10 @@ def index():
 def user_dashboard():
     return render_template('user_dashboard.html', name=current_user.username)
 
-
 from flask_paginate import get_page_parameter
+
+
+
 
 @main.route('/ngo/dashboard')
 @login_required
@@ -32,12 +42,10 @@ def ngo_dashboard():
     page = request.args.get(get_page_parameter(), type=int, default=1)
     per_page = 5  # Number of issues per page
 
-    # Build base query
     base_query = IssueReport.query
     if filter_status:
         base_query = base_query.filter_by(status=filter_status)
 
-    # Apply pagination
     pagination = base_query.order_by(IssueReport.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
     issues = pagination.items
 
@@ -77,3 +85,117 @@ def update_status(issue_id):
     db.session.commit()
     flash('Status updated successfully.')
     return redirect(url_for('main.ngo_dashboard'))
+
+
+
+
+@main.route('/ngo/events')
+@login_required
+def ngo_events():
+    if current_user.role != 'ngo':
+        return redirect(url_for('main.user_dashboard'))
+
+    events = NGOEvent.query.filter_by(created_by=current_user.id).order_by(NGOEvent.date.desc()).all()
+    return render_template('ngo_events.html', events=events)
+
+
+
+
+@main.route('/ngo/events/create', methods=['GET', 'POST'])
+@login_required
+def create_event():
+    if current_user.role != 'ngo':
+        return redirect(url_for('main.user_dashboard'))
+
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        date = request.form['date']
+        location = request.form['location']
+        image = request.files.get('image')
+        
+        try:
+            event_date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Invalid date format. Please use YYYY-MM-DD.', 'danger')
+            return redirect(request.url)
+
+        image_filename = None
+        if image:
+            image_filename = secure_filename(image.filename)
+            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename))
+
+        event = NGOEvent(
+            title=title,
+            description=description,
+            date=event_date,
+            location=location,
+            image_filename=image_filename,
+            created_by=current_user.id
+        )
+        db.session.add(event)
+        db.session.commit()
+
+        flash('Event created successfully!', 'success')
+        return redirect(url_for('main.ngo_events'))
+
+    return render_template('create_event.html')
+
+
+
+
+@main.route('/events')
+def view_events():
+    events = NGOEvent.query.order_by(NGOEvent.date).all()
+    return render_template('view_events.html', events=events)
+
+
+
+#edits event
+from datetime import datetime
+
+@main.route('/ngo/event/<int:event_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_event(event_id):
+    event = NGOEvent.query.get_or_404(event_id)
+
+    if current_user.id != event.created_by:
+        flash('Unauthorized action.', 'danger')
+        return redirect(url_for('main.ngo_dashboard'))
+
+    if request.method == 'POST':
+        event.title = request.form['title']
+        event.description = request.form['description']
+        event.date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+        event.location = request.form['location']
+
+        # Image upload (optional)
+        if 'image' in request.files:
+            image = request.files['image']
+            if image.filename:
+                filename = secure_filename(image.filename)
+                image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                event.image_filename = filename
+
+        db.session.commit()
+        flash('Event updated successfully.', 'success')
+        return redirect(url_for('main.ngo_events'))
+
+    return render_template('edit_event.html', event=event)
+
+
+
+# Delete event
+@main.route('/ngo/event/<int:event_id>/delete')
+@login_required
+def delete_event(event_id):
+    event = NGOEvent.query.get_or_404(event_id)
+
+    if current_user.id != event.created_by:
+        flash('Unauthorized action.', 'danger')
+        return redirect(url_for('main.ngo_dashboard'))
+
+    db.session.delete(event)
+    db.session.commit()
+    flash('Event deleted successfully.', 'success')
+    return redirect(url_for('main.ngo_events'))

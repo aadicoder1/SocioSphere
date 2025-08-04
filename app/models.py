@@ -23,3 +23,16 @@ class IssueReport(db.Model):
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     user = db.relationship('User', backref=db.backref('reports', lazy=True))
+
+
+class NGOEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    date = db.Column(db.Date, nullable=False)  
+    location = db.Column(db.String(200), nullable=False)
+    image_filename = db.Column(db.String(100))
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    creator = db.relationship('User', backref=db.backref('ngo_events', lazy=True))

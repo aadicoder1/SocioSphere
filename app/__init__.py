@@ -2,25 +2,27 @@ import os
 from flask import Flask
 from .extensions import db
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
     
     app.config['SECRET_KEY'] = 'supersecretkey'  # for sessions & auth
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-    
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db' 
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
-
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     
     db.init_app(app)
+    migrate.init_app(app, db)
+    
     from .models import User
     from .report import report_bp
     from .auth import auth
     from .routes import main
+
 
     app.register_blueprint(auth)
     app.register_blueprint(main)
