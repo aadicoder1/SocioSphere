@@ -2,19 +2,19 @@
 
 {% block content %}
 <div class="container">
-  <div class="card">
+  <div class="card p-4 mt-4 shadow-lg">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="flash-messages">
+        <div class="alert alert-info flash-messages">
           {% for message in messages %}
-            <p>{{ message }}</p>
+            <p class="mb-0">{{ message }}</p>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
 
     <script>
-      setTimeout(function() {
+      setTimeout(function () {
         const flashBox = document.querySelector('.flash-messages');
         if (flashBox) {
           flashBox.style.display = 'none';
@@ -22,11 +22,35 @@
       }, 3000);
     </script>
 
-    <h2>Welcome, {{ name }}</h2>
+    <h2 class="mb-3">Welcome, {{ name }}</h2>
     <p>This is your dashboard to raise complaints and track welfare requests.</p>
-    <br><br>
-    <a class="btn" href="{{ url_for('main.view_events') }}">Explore Events</a>
-    <br><br><br>
+
+    <a class="btn btn-outline-primary mt-3" href="{{ url_for('main.view_events') }}" style="text-decoration: none;">
+      Explore Events
+    </a>
   </div>
+
+  {% if events %}
+  <div id="eventCarousel" class="carousel slide carousel-fade mt-5 shadow" data-bs-ride="carousel" style="width: 80%; margin: auto;">
+    <div class="carousel-inner">
+      {% for event in events %}
+      <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+        <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}" class="d-block w-100 rounded" alt="{{ event.title }}" style="height: 400px; object-fit: cover;">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
+          <h5>{{ event.title }}</h5>
+          <p>{{ event.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    </button>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
+

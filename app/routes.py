@@ -6,6 +6,7 @@ from flask_paginate import get_page_parameter
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from flask_paginate import get_page_parameter
 
 
 
@@ -26,10 +27,12 @@ def index():
 def user_dashboard():
     if current_user.role != 'user':
         return redirect(url_for('main.ngo_dashboard'))
-    else:
-        return render_template('user_dashboard.html', name=current_user.username)
 
-from flask_paginate import get_page_parameter
+    from app.models import NGOEvent  
+    # Get all events, latest first
+    events = NGOEvent.query.order_by(NGOEvent.date.desc()).all()
+    return render_template('user_dashboard.html', name=current_user.username, events=events)
+
 
 
 
@@ -112,11 +115,15 @@ def create_event():
         return redirect(url_for('main.user_dashboard'))
 
     if request.method == 'POST':
-        title = request.form['title']
+        title = request.form.get('title')
         description = request.form['description']
         date = request.form['date']
         location = request.form['location']
         image = request.files.get('image')
+        
+        if not title or not description or not date or not location:
+            flash("All fields except image are required.", "danger")
+            return redirect(request.url)
         
         try:
             event_date = datetime.strptime(date, '%Y-%m-%d').date()
