@@ -14,7 +14,7 @@
             height: 100%;
             margin: 0;
             font-family: 'Lato', sans-serif;
-            background-color: #f4f6f8;
+            background-color: #e5e5e5ff;
             color: #111;
             display: flex;
             flex-direction: column;
@@ -22,7 +22,7 @@
 
         /* Header/Navbar */
         header {
-            background-color: #0077b5;
+            background-color: #002234ff;
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -102,7 +102,7 @@
         }
 
         footer {
-            background-color: #02141cff;
+            background-color: #001d2aff;
             color: white;
             margin-bottom:0px;
             text-align: center;
@@ -111,7 +111,7 @@
         }
 
         .btn {
-            background-color: #0077b5;
+            background-color: #002b42ff;
             color: white;
             padding: 10px 16px;
             border: none;
@@ -122,7 +122,7 @@
         }
 
         .btn:hover {
-            background-color: #005f91;
+            background-color: #023754ff;
         }
 
         .success {
@@ -133,6 +133,7 @@
             color: #dc3545;
         }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
 
@@ -176,6 +177,6 @@
         nav.classList.toggle('show');
     }
 </script>
-
+{% block scripts %}{% endblock %} 
 </body>
 </html>

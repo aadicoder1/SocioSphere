@@ -1,81 +1,96 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Report an Issue</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
+{% extends 'base.html' %}
+{% block title %}Report Issue{% endblock %}
+
+{% block head %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
     #map {
-      height: 400px;
-      width: 100%;
-      margin-top: 10px;
-      margin-bottom: 10px;
+        height: 375px;
+        border-radius: 10px;
+        width: 75%;
+        margin: 10px auto;
+        border: 1.5px solid grey;
     }
-  </style>
-</head>
-<body>
+</style>
+{% endblock %}
 
-  <h2>Report a New Issue</h2>
+{% block content %}
+<div class="container" style="text-align:center; max-width:90%;">
+    <h1 style="font-size:40px;">Report a New Issue</h1><br>
 
-  <form method="POST" enctype="multipart/form-data">
-    <input type="text" name="title" placeholder="Issue Title" required><br><br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <textarea name="description" placeholder="Describe the issue..." rows="5" cols="40" required></textarea><br><br>
+    <form method="POST" action="{{ url_for('report.report_issue') }}" enctype="multipart/form-data">
+        <div class="mb-3">
+            <input type="text" class="form-control" name="title" placeholder="Issue Title" required style="font-size: 18px;">
+        </div><br>
 
-    <input type="file" name="image" accept="image/*"><br><br>
+        <div class="mb-3">
+            <textarea class="form-control" name="description" placeholder="Describe the issue..." required style="font-size: 18px;"></textarea>
+        </div><br>
 
-    <label for="location">Location (Address):</label><br>
-    <input type="text" name="location" id="location" placeholder="Click on map to auto-fill" required><br><br>
+        <div style="text-align:left;">
+            <label for="image" style="font-size: 18px;" class="mb-3">Image (if any):</label>
+            <input type="file" name="image" accept="image/*" class="form-control mb-3" style="font-size: 18px;"><br>
 
-    <div id="map"></div>
+            <label for="location" style="font-size: 18px;" class="mb-3">Location (Address):</label>
+            <input type="text" name="location" id="location" placeholder="Click on map to auto-fill" class="form-control mb-3" style="font-size: 18px;" required><br>
 
-    <input type="hidden" name="latitude" id="latitude">
-    <input type="hidden" name="longitude" id="longitude">
+            <div id="map"></div>
 
-    <button type="submit">Submit Report</button>
-  </form>
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+        </div><br>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
+        <div style="text-align:left;">
+            <button type="submit" class="btn btn-primary" style="font-size: 16px;">Submit Report</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
     let map = L.map('map').setView([28.470257, 77.491885], 13); // Center at Noida/Delhi
 
-    // Load OSM tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
     let marker;
 
     map.on('click', function(e) {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
 
-      document.getElementById('latitude').value = lat;
-      document.getElementById('longitude').value = lng;
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
 
-      if (marker) {
-        marker.remove();
-      }
+        if (marker) {
+            marker.remove();
+        }
 
-      marker = L.marker([lat, lng]).addTo(map);
+        marker = L.marker([lat, lng]).addTo(map);
 
-      // Use Nominatim API for reverse geocoding
-      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.display_name) {
-            document.getElementById('location').value = data.display_name;
-          } else {
-            document.getElementById('location').value = "Address not found";
-          }
-        })
-        .catch(error => {
-          console.error("Geocoding error:", error);
-          document.getElementById('location').value = "Error fetching address";
-        });
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('location').value = data.display_name || "Address not found";
+            })
+            .catch(error => {
+                console.error("Geocoding error:", error);
+                document.getElementById('location').value = "Error fetching address";
+            });
     });
-  </script>
-
-</body>
-</html>
+</script>
+{% endblock %}

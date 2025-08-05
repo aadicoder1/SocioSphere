@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}{% endblock %}
 
 {% block content %}
 <div class="container" style="text-align:center; max-width:75%;">
-    <h1 style="font-size:50px;">Welcome to SocioSphere</h1>
-    <p style="font-size:25px;">Your gateway to social good!</p>
+    
 
     <!-- Flash messages (success, error) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -14,6 +13,10 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <h1 style="font-size:50px;">Welcome to SocioSphere</h1>
+    <p style="font-size:25px;">Your gateway to social good!</p>
+    <img src="{{ url_for('static', filename='sociosphere.jpg') }}" alt="Logo" style="border-radius:50%;height:200px;"><br><br><br>
 
     <form method="POST" action="{{ url_for('auth.login') }}">
         <div class="mb-3">

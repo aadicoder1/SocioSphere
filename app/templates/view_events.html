@@ -3,10 +3,10 @@
 
 {% block content %}
 <div class="container">
-    <h2>🌍 Community Events</h2>
+    <h1><b>🌍 Community Events</h1>
     
     {% for event in events %}
-        <div class="event-card">
+        <div class="event-card"><hr>
             <h3>{{ event.title }}</h3>
             <p><strong>Date:</strong> {{ event.date }}</p>
             <p><strong>Location:</strong> {{ event.location }}</p>
@@ -14,7 +14,7 @@
 
             {% if event.image_filename %}
                 <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}"
-                     alt="Event Image" style="max-width: 100%; height: auto;">
+                     alt="Event Image" style="max-width: 100%; height: auto;"><br><hr>
             {% endif %}
         </div>
     {% else %}
