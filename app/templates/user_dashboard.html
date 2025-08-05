@@ -25,8 +25,8 @@
     <h2 class="mb-3">Welcome, {{ name }}</h2>
     <p>This is your dashboard to raise complaints and track welfare requests.</p>
 
-    <a class="btn btn-outline-primary mt-3" href="{{ url_for('main.view_events') }}" style="text-decoration: none;">
-      Explore Events
+    <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.report_issue') }}" style="text-decoration: none;">
+      Report an Issue
     </a>
   </div>
 
@@ -35,10 +35,10 @@
     <div class="carousel-inner">
       {% for event in events %}
       <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-        <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}" class="d-block w-100 rounded" alt="{{ event.title }}" style="height: 400px; object-fit: cover;">
+        <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}" class="d-block w-100 rounded" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">
         <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
           <h5>{{ event.title }}</h5>
-          <p>{{ event.description }}</p>
+          <p>{{ event.date }}</p>
         </div>
       </div>
       {% endfor %}

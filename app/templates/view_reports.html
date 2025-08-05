@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="width:95%;">
+</b><h1 style="text-align:center;">Reports (Pending/In Progress)</h1><br>
+
+    {% if active_reports %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>S.no</th>
+                        <th>Issue Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Reported At</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in active_reports %}
+                        <tr>
+                            <td>{{ report.id }}.</td>
+                            <td>{{ report.title }}</td>
+                            <td>{{ report.description }}</td>
+                            <td>{{ report.status }}</td>
+                            <td>{{ report.timestamp.strftime('%Y-%m-%d  [ %H:%M ]') }}</td>
+                            <td>{{ report.location }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No reports found with status 'Pending' or 'In Progress'.</p>
+    {% endif %}
+
+
+<h1 style="text-align:center;">Reports (Resolved )</h1><br>
+    {% if resolved_reports %}
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Resolved By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in resolved_reports %}
+                <tr>
+                    <td>{{ report.title }}</td>
+                    <td>{{ report.description }}</td>
+                    <td>{{ report.location }}</td>
+                    <td>{{ report.resolved_by.username if report.resolved_by else 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No resolved reports yet.</p>
+    {% endif %}
+
+
+</div>
+{% endblock %}

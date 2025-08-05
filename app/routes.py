@@ -96,13 +96,11 @@ def update_status(issue_id):
 
 
 
-@main.route('/ngo/events')
+@main.route('/events')
 @login_required
 def ngo_events():
-    if current_user.role != 'ngo':
-        return redirect(url_for('main.user_dashboard'))
-
-    events = NGOEvent.query.filter_by(created_by=current_user.id).order_by(NGOEvent.date.desc()).all()
+    
+    events = NGOEvent.query.order_by(NGOEvent.date.desc()).all()
     return render_template('ngo_events.html', events=events)
 
 
