@@ -28,6 +28,9 @@ def report_issue():
         location = request.form.get('location')
         latitude = request.form.get('latitude')
         longitude = request.form.get('longitude')
+        
+        latitude = float(latitude) if latitude and latitude.strip() else None
+        longitude = float(longitude) if longitude and longitude.strip() else None
 
         new_report = IssueReport(
             user_id=current_user.id,
