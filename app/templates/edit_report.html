@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="width:70%">
+<h2>Edit Report</h2><br>
+
+<form method="POST">
+    <div class="mb-3">
+        <label>Title:</label>
+        <input type="text" name="title" class="form-control" value="{{ report.title }}" required>
+    </div>
+    <div class="mb-3">
+        <label>Description:</label>
+        <textarea name="description" class="form-control" required>{{ report.description }}</textarea>
+    </div>
+    <div class="mb-3">
+        <label>Location:</label>
+        <input type="text" name="location" class="form-control" value="{{ report.location }}">
+    </div>
+
+    <div class="mb-3">
+        <label>Select Location on Map:</label>
+        <div id="map" style="height: 300px;border-radius:10px"></div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <label>Latitude:</label>
+            <input type="text" id="latitude" name="latitude" class="form-control" value="{{ report.latitude }}" readonly style="width:200px">
+        </div><div class="col">
+            <label>Longitude:</label>
+            <input type="text" id="longitude" name="longitude" class="form-control" value="{{ report.longitude }}" readonly style="width:200px">
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update Report</button>
+    <button type="submit" name="delete" value="true" class="btn btn-danger float-end"
+        onclick="return confirm('Are you sure you want to delete this report?');">Delete Report</button>
+</form><br><br><br>
+
+<!-- Leaflet.js CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+<script>
+    const map = L.map('map').setView([{{ report.latitude or 28.6139 }}, {{ report.longitude or 77.2090 }}], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+    }).addTo(map);
+
+    const marker = L.marker([{{ report.latitude or 28.6139 }}, {{ report.longitude or 77.2090 }}], {
+        draggable: true
+    }).addTo(map);
+
+    marker.on('dragend', function (e) {
+        const latlng = marker.getLatLng();
+        document.getElementById('latitude').value = latlng.lat.toFixed(6);
+        document.getElementById('longitude').value = latlng.lng.toFixed(6);
+    });
+
+    map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
+        document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
+    });
+</script>
+</div>
+{% endblock %}

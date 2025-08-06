@@ -66,3 +66,60 @@ def view_reports():
     return render_template('view_reports.html',
                            active_reports=notdone_reports, 
                            resolved_reports=resolved_reports)
+    
+    
+    
+@report_bp.route('/user/my_reports')
+@login_required
+def my_reports():
+    if current_user.role != 'user':
+        return redirect(url_for('main.ngo_dashboard'))
+
+    reports = IssueReport.query.filter_by(user_id=current_user.id).order_by(IssueReport.timestamp.desc()).all()
+    return render_template('my_reports.html', reports=reports)
+
+
+
+@report_bp.route('/user/edit-report/<int:report_id>', methods=['GET', 'POST'])
+@login_required
+def edit_report(report_id):
+    report = IssueReport.query.get_or_404(report_id)
+
+    if report.user_id != current_user.id:
+        flash("Unauthorized access to edit this report.", "danger")
+        return redirect(url_for('report.my_reports'))
+
+    if request.method == 'POST':
+        # Handle Delete
+        if 'delete' in request.form:
+            db.session.delete(report)
+            db.session.commit()
+            flash('Report deleted successfully.', 'success')
+            return redirect(url_for('report.my_reports'))
+        
+        report.title = request.form['title']
+        report.description = request.form['description']
+        report.location = request.form['location']
+        report.latitude = request.form['latitude']
+        report.longitude = request.form['longitude']
+
+        db.session.commit()
+        flash("Report updated successfully!", "success")
+        return redirect(url_for('report.my_reports'))
+
+    return render_template('edit_report.html', report=report)
+
+
+
+@report_bp.route('/report/delete/<int:report_id>', methods=['GET'])
+@login_required
+def delete_report(report_id):
+    report = IssueReport.query.get_or_404(report_id)
+    if report.user_id != current_user.id:
+        flash("You are not authorized to delete this report.", "danger")
+        return redirect(url_for('report.view_reports'))
+
+    db.session.delete(report)
+    db.session.commit()
+    flash("Report deleted successfully.", "success")
+    return redirect(url_for('report.my_reports'))

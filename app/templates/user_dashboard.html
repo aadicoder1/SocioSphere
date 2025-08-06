@@ -24,14 +24,17 @@
 
     <h2 class="mb-3">Welcome, {{ name }}</h2>
     <p>This is your dashboard to raise complaints and track welfare requests.</p>
-
-    <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.report_issue') }}" style="text-decoration: none;">
-      Report an Issue
+    <div>
+    <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.my_reports') }}" style="text-decoration: none;width:170px;">
+      My Issues
     </a>
+    <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.report_issue') }}" style="text-decoration: none;width:170px;">
+      Report an Issue
+    </a></div>
   </div>
 
   {% if events %}
-  <div id="eventCarousel" class="carousel slide carousel-fade mt-5 shadow" data-bs-ride="carousel" style="width: 80%; margin: auto;">
+  <div id="eventCarousel" class="carousel slide carousel-fade mt-5 shadow" data-bs-ride="carousel" style="width: 70%; margin: auto;">
     <div class="carousel-inner">
       {% for event in events %}
       <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">

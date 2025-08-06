@@ -89,6 +89,12 @@ def update_status(issue_id):
     new_status = request.form['status']
     issue = IssueReport.query.get_or_404(issue_id)
     issue.status = new_status
+
+    if new_status.lower() == 'resolved':
+        issue.resolved_by_id = current_user.id
+    else:
+        issue.resolved_by_id = None  # optional: clear if un-resolved
+
     db.session.commit()
     flash('Status updated successfully.')
     return redirect(url_for('main.ngo_dashboard'))
