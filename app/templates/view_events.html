@@ -2,23 +2,59 @@
 {% block title %}View Events{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1><b>🌍 Community Events</h1>
-    
-    {% for event in events %}
-        <div class="event-card"><hr>
-            <h3>{{ event.title }}</h3>
-            <p><strong>Date:</strong> {{ event.date }}</p>
-            <p><strong>Location:</strong> {{ event.location }}</p>
-            <p>{{ event.description }}</p>
+<div class="container mt-4">
+    <h1 class="mb-4 text-center"><b>🌍 Community Events</b></h1>
 
-            {% if event.image_filename %}
-                <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}"
-                     alt="Event Image" style="max-width: 100%; height: auto;"><br><hr>
-            {% endif %}
+    <!-- Search and Sort Form -->
+    <form method="get" action="{{ url_for('main.view_events') }}" class="row g-3 mb-4 align-items-end">
+        <div class="col-md-4">
+            <label for="search" class="form-label">Search by title or location</label>
+            <input type="text" name="search" id="search" class="form-control" placeholder="e.g. Clean-up, Marathon" value="{{ request.args.get('search', '') }}">
+        </div>
+        <div class="col-md-3">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request.args.get('start_date', '') }}">
+        </div>
+        <div class="col-md-3">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request.args.get('end_date', '') }}">
+        </div>
+        <div class="col-md-2">
+            <label for="sort" class="form-label">Sort By</label>
+            <select name="sort" id="sort" class="form-select">
+                <option value="asc" {% if request.args.get('sort', 'asc') == 'asc' %}selected{% endif %}>Date ↑</option>
+                <option value="desc" {% if request.args.get('sort') == 'desc' %}selected{% endif %}>Date ↓</option>
+            </select>
+        </div>
+        <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </div>
+    </form>
+
+    <!-- Event Cards -->
+    {% if events %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for event in events %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        {% if event.image_filename %}
+                            <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}" class="card-img-top" alt="Event Image" >
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.title }}</h5>
+                            <p class="card-text"><strong>Date:</strong> {{ event.date }}</p>
+                            <p class="card-text"><strong>Location:</strong> {{ event.location }}</p>
+                            <p class="card-text">{{ event.description[:120] }}{% if event.description|length > 120 %}...{% endif %}</p>
+                        </div>
+                        <div class="card-footer text-end bg-white">
+                            <a href="{{ url_for('main.event_detail', event_id=event.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     {% else %}
-        <p>No events available yet.</p>
-    {% endfor %}
+        <p class="text-center mt-5">🚫 No events available yet.</p>
+    {% endif %}
 </div>
 {% endblock %}

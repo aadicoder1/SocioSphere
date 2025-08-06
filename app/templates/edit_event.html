@@ -1,23 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Edit Event</h2>
+<div class="container mt-4">
+    <h2>Edit Event</h2>
 
-<form method="POST" enctype="multipart/form-data">
-    <label>Title:</label><br>
-    <input type="text" name="title" value="{{ event.title }}" required><br><br>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" class="form-control" name="title" id="title" value="{{ event.title }}" required>
+        </div>
 
-    <label>Description:</label><br>
-    <textarea name="description" required>{{ event.description }}</textarea><br><br>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <textarea class="form-control" name="description" id="description" rows="4" required>{{ event.description }}</textarea>
+        </div>
 
-    <label>Date:</label><br>
-    <input type="text" name="date" value="{{ event.date }}" required><br><br>
+        <div class="mb-3">
+            <label for="date" class="form-label">Date:</label>
+            <input type="date" class="form-control" name="date" id="date" value="{{ event.date }}" required>
+        </div>
 
-    <label>Location:</label><br>
-    <input type="text" name="location" value="{{ event.location }}" required><br><br>
+        <div class="mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input type="text" class="form-control" name="location" id="location" value="{{ event.location }}" required>
+        </div>
 
-    <label>Update Image:</label><br>
-    <input type="file" name="image"><br><br>
+        <div class="mb-3">
+            <label>Sponsors (Optional):</label><br>
+            <input type="text" name="sponsors" value="{{ event.sponsors or '' }}">
+        </div>
 
-    <button type="submit">Update</button>
-</form>
+        <div class="mb-3">
+            <label for="image" class="form-label">Update Image:</label>
+            <input type="file" class="form-control" name="image" id="image">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
 {% endblock %}

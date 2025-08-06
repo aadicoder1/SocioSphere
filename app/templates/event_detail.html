@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">{{ event.title }}</h1>
+
+    <p><strong>Date :</strong> {{ event.date }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Organized by:</strong> {{ event.creator.username }}</p>
+    
+    {% if event.sponsors %}
+        <p><strong>Sponsors:</strong> {{ event.sponsors }}</p>
+    {% endif %}
+
+    {% if event.image_filename %}
+        <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}"
+             alt="Event Image" class="img-fluid rounded shadow mb-3">
+    {% endif %}
+
+    <hr>
+    <h4>Description:</h4>
+    <p>{{ event.description }}</p>
+
+    <hr>
+    <h4>💬 Comments</h4>
+    <p class="text-muted">Want to share your thoughts or feedback about this event? You can post it here.</p>
+
+    <!-- Placeholder comment form -->
+    <form method="post" action="#">
+        <div class="mb-3">
+            <textarea class="form-control" rows="4" placeholder="Write your comment..." disabled></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" disabled>Post Comment (Coming Soon)</button>
+    </form>
+
+    <a href="{{ url_for('main.view_events') }}" class="btn btn-secondary mt-4">← Back to Events</a>
+</div>
+{% endblock %}
+

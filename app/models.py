@@ -39,4 +39,5 @@ class NGOEvent(db.Model):
     image_filename = db.Column(db.String(100))
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    sponsors = db.Column(db.String(300)) 
     creator = db.relationship('User', backref=db.backref('ngo_events', lazy=True))

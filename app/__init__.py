@@ -36,5 +36,5 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-
+    #print(app.url_map)
     return app
