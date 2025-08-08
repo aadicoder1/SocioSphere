@@ -3,20 +3,17 @@
 {% block content %}
 <div class="container mt-5" style="max-width: 700px;">
     <h2>Edit Profile</h2>
-    <form method="POST" enctype="multipart/">
+    <form method="POST" enctype="multipart/form-data">
        
 
         <!-- Profile Picture Upload -->
         <div class="mb-3">
-    <label for="photo" class="form-label">Profile Picture</label>
-    <input 
-        type="file" 
-        class="form-control" 
-        id="photo"            
-        name="photo" 
-        accept="image/*"       
-        aria-describedby="photoHelp" 
-        >
+            <label for="photo" class="form-label">Profile Picture</label>
+            <input type="file" class="form-control" id="photo" name="photo">
+            {% if current_user.photo %}
+                <img src="{{ url_for('static', filename='uploads/' ~ current_user.photo) }}" alt="NGO Logo" style="width:100px; height:100px; margin-top:10px;">
+            {% endif %}
+    
     <div id="photoHelp" class="form-text">
         Upload a new profile picture (JPEG, PNG, etc.)
     </div>
