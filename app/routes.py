@@ -155,7 +155,8 @@ def view_events():
     if search:
         query = query.filter(
             NGOEvent.title.ilike(f"%{search}%") |
-            NGOEvent.location.ilike(f"%{search}%")
+            NGOEvent.location.ilike(f"%{search}%") |
+            NGOEvent.description.ilike(f"%{search}%")
         )
     if start_date:
         query = query.filter(NGOEvent.date >= start_date)
