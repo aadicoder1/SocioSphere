@@ -5,9 +5,8 @@
     <title>SocioSphere</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         html, body {
@@ -20,9 +19,8 @@
             flex-direction: column;
         }
 
-        /* Header/Navbar */
         header {
-            background-color: #000000;
+            background-color: #000;
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -39,6 +37,7 @@
         .brand img {
             height: 50px;
             margin-right: 10px;
+            border-radius: 50%;
         }
 
         .brand h1 {
@@ -61,13 +60,15 @@
             color: white;
             text-decoration: none;
             font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
         }
 
         .nav-links a:hover {
-            text-decoration: underline;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* Responsive Menu */
         @media (max-width: 768px) {
             .menu-icon {
                 display: block;
@@ -92,7 +93,7 @@
 
         .container {
             flex: 1;
-            background-color: #ffffff;
+            background-color: #fff;
             padding: 25px;
             margin: 30px auto;
             border-radius: 12px;
@@ -102,16 +103,16 @@
         }
 
         footer {
-            background-color: #191919ff;
+            background-color: #191919;
             color: white;
-            margin-bottom:0px;
+            padding: 12px 0;
             text-align: center;
             font-size: 15px;
-            
+            margin-top: auto;
         }
 
         .btn {
-            background-color: #000000ff;
+            background-color: #000;
             color: white;
             padding: 10px 16px;
             border: none;
@@ -122,7 +123,7 @@
         }
 
         .btn:hover {
-            background-color: #1c1f21ff;
+            background-color: #1c1f21;
         }
 
         .success {
@@ -139,7 +140,7 @@
 
 <header>
     <div class="brand">
-        <img src="{{ url_for('static', filename='sociosphere.png') }}" alt="Logo" style="border-radius:50%;">
+        <img src="{{ url_for('static', filename='sociosphere.png') }}" alt="Logo">
         <h1>SocioSphere</h1>
     </div>
     <div class="menu-icon" onclick="toggleMenu()">☰</div>
@@ -147,26 +148,32 @@
         <a href="{{ url_for('main.user_dashboard') }}">Home</a>
         <a href="{{ url_for('report.view_reports') }}">Reports</a>
         <a href="{{ url_for('main.view_events') }}">Events</a>
+        
         {% if current_user.is_authenticated %}
-            <a href="{{ url_for('auth.logout') }}">Logout</a>
-        {% else %}
-            <a href="{{ url_for('auth.login') }}">Login</a>
-        {% endif %}
+    {% if current_user.role == 'ngo' %}
+        <a href="{{ url_for('main.ngo_profile', user_id=current_user.id) }}">Profile</a>
+    {% else %}
+        <a href="{{ url_for('main.view_user_profile', user_id=current_user.id) }}">Profile</a>
+    {% endif %}
+{% else %}
+    <a href="{{ url_for('auth.login') }}">Login</a>
+{% endif %}
+
+
+
     </nav>
 </header>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    {% block content %}
-    {% endblock %}
-
+{% block content %}
+{% endblock %}
 
 <footer>
     <p>&copy; 2025 SocioSphere | Empowering Communities</p>
@@ -178,6 +185,7 @@
         nav.classList.toggle('show');
     }
 </script>
+
 {% block scripts %}{% endblock %} 
 </body>
 </html>

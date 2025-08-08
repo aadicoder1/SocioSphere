@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Username at Top -->
+    <h2 class="mb-4" style="text-align:center;">@{{ user.username }}</h2>
+
+    <!-- Profile Header -->
+    <div class="d-flex align-items-center mb-4" style="gap: 40px;">
+        <!-- Profile Picture -->
+        <img src="{{ url_for('static', filename='uploads/' ~ (user.photo or 'default_profile.jpg')) }}"
+             alt="User Photo"
+             style="width:150px; height:150px; object-fit:cover; border-radius:50%; border: 2px solid #000;">
+        
+        <!-- User Info -->
+        <div>
+            <h3>{{ user.name }}</h3>
+            <p>{{ user.bio or "No bio available." }}</p>
+
+            <h5>Member of NGOs:</h5>
+            {% if user.ngos %}
+                <ul style="padding-left: 1rem;">
+                    {% for ngo in user.ngos %}
+                        <li><a href="{{ url_for('main.ngo_profile', ngo_id=ngo.id) }}">{{ ngo.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Not a member of any NGO.</p>
+            {% endif %}
+        </div>
+    </div>
+
+<hr>
+
+    <!-- Posts Section -->
+
+<!-- Button to show form -->
+<button class="btn btn-success mb-3" id="showPostFormBtn">➕ Create Post</button>
+
+<!-- Hidden form that slides up -->
+<form method="POST" action="{{ url_for('main.create_post') }}" enctype="multipart/form-data" id="postForm" style="display: none;" class="mb-4">
+    <div class="mb-3">
+        <label for="title" class="form-label">Post Title</label>
+        <input type="text" class="form-control" name="title" id="title" required>
+    </div>
+    <div class="mb-3">
+        <label for="image" class="form-label">Upload Image (optional)</label>
+        <input type="file" class="form-control" name="image" id="image" accept="image/*">
+    </div>
+    <div class="mb-3">
+        <label for="file" class="form-label">Upload File (optional)</label>
+        <input type="file" class="form-control" name="file" id="file">
+    </div>
+    <button type="submit" class="btn btn-primary">Post</button>
+</form>
+
+<script>
+    document.getElementById("showPostFormBtn").addEventListener("click", function () {
+    const form = document.getElementById("postForm");
+    const button = this;
+    if (form.style.display === "none") {
+        $(form).slideDown();
+        button.innerHTML = "✖️ Close Form";
+    } else {
+        $(form).slideUp();
+        button.innerHTML = "➕ Create Post";
+    }
+});
+</script>
+
+
+<h4 class="mt-4">Posts</h4>
+<div style="display: flex; overflow-x: auto; gap: 20px;">
+    {% for post in user.posts %}
+        {% include "components/post_card.html" %}
+    {% else %}
+        <p>No posts available.</p>
+    {% endfor %}
+</div>
+
+    <!-- Divider -->
+    <hr>
+
+    <!-- Reported Issues -->
+    <div class="mb-4">
+        <h4>📍 Issues Reported by {{ user.name }}</h4>
+        {% if user.reports %}
+            <ul>
+                {% for report in user.reports %}
+                    <li>{{ report.title }} - {{ report.location }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No issues reported yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Contributions -->
+    <div class="mb-4">
+        <h4>🤝 Contributions</h4>
+        {% if user.contributions %}
+    <ul>
+        {% for c in user.contributions %}
+            <li>
+                <strong>{{ c.title }}</strong> — {{ c.date.strftime("%d %b %Y") }}<br>
+                {{ c.description }}
+            </li><br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No contributions added yet.</p>
+{% endif %}
+
+    </div>
+
+    <!-- Logout -->
+    <div class="text-center">
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Logout</a>
+        <a href="{{ url_for('main.edit_profile') }}" class="btn btn-secondary">Edit Profile</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% endblock %}

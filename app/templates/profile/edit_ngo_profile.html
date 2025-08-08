@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit NGO Profile</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm mt-4">
+        <div class="mb-3">
+            <label for="name" class="form-label">NGO Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ ngo.name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ ngo.email }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio" rows="3">{{ ngo.bio }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="photo" class="form-label">NGO Logo</label>
+            <input type="file" class="form-control" id="photo" name="photo">
+            {% if ngo.photo %}
+                <img src="{{ url_for('static', filename='uploads/' ~ ngo.photo) }}" alt="NGO Logo" style="width:100px; height:100px; margin-top:10px;">
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+</div>
+{% endblock %}

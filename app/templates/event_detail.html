@@ -6,12 +6,12 @@
     <h1 class="mb-4">{{ event.title }}</h1>
 
     <p><strong>Date :</strong> {{ event.date }}</p>
-    <p><strong>Location:</strong> {{ event.location }}</p>
-    <p><strong>Organized by:</strong> {{ event.creator.username }}</p>
+    <p><strong>Location :</strong> {{ event.location }}</p>
+    <p><strong>Organized by :</strong> {{ event.creator.username }}</p>
     
-    {% if event.sponsors %}
+   
         <p><strong>Sponsors:</strong> {{ event.sponsors }}</p>
-    {% endif %}
+    
 
     {% if event.image_filename %}
         <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}"

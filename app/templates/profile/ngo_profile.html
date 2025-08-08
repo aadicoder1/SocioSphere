@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">NGO Profile</h2>
+
+    <div class="card p-4 shadow-sm">
+        <div class="d-flex align-items-center mb-3">
+        <img src="{{ url_for('static', filename='uploads/' ~ (ngo.photo or 'default_ngo_profile.jpg')) }}"
+                 alt="NGO Logo" 
+                 style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 1px solid #ccc;">
+            <div class="ms-4">
+                <h3 class="mb-1">{{ ngo.name }}</h3>
+                <p class="mb-0"><strong>Email:</strong> {{ ngo.email }}</p>
+                <p class="mb-0"><strong>Bio:</strong> {{ ngo.bio or "No description provided." }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+            <!-- Posts Section -->
+
+<!-- Button to show form -->
+<button class="btn btn-success mb-3" id="showPostFormBtn">+ Create Post</button>
+
+<!-- Hidden form that slides up -->
+<form method="POST" action="{{ url_for('main.create_post') }}" enctype="multipart/form-data" id="postForm" style="display: none;" class="mb-4">
+    <div class="mb-3">
+        <label for="title" class="form-label">Post Title</label>
+        <input type="text" class="form-control" name="title" id="title" required>
+    </div>
+    <div class="mb-3">
+        <label for="image" class="form-label">Upload Image (optional)</label>
+        <input type="file" class="form-control" name="image" id="image" accept="image/*">
+    </div>
+    <div class="mb-3">
+        <label for="file" class="form-label">Upload File (optional)</label>
+        <input type="file" class="form-control" name="file" id="file">
+    </div>
+    <button type="submit" class="btn btn-primary">Post</button>
+</form>
+<script>
+    document.getElementById("showPostFormBtn").addEventListener("click", function () {
+        const form = document.getElementById("postForm");
+        if (form.style.display === "none") {
+            // Slide Down
+            $(form).slideDown();
+        } else {
+            // Slide Up
+            $(form).slideUp();
+        }
+    });
+</script>
+
+
+<h4 class="mt-4">Posts by Members</h4>
+<div style="display: flex; overflow-x: auto; gap: 20px;">
+    {% for member in ngo.participants %}
+        {% for post in member.posts %}
+            {% include "components/post_card.html" %}
+        {% endfor %}
+    {% else %}
+        <p>No posts by members.</p>
+    {% endfor %}
+</div>
+
+        <hr>
+
+        <h4>Events Created:</h4>
+        {% if ngo.ngo_events %}
+            <ul>
+                {% for event in ngo.ngo_events %}
+                    <li>{{ event.title }} ({{ event.date.strftime('%Y-%m-%d') }})</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">No events posted yet.</p>
+        {% endif %}
+
+        <hr>
+
+        <h4>Issues Resolved:</h4>
+        {% if ngo.resolved_issues %}
+            <ul>
+                {% for issue in ngo.resolved_issues %}
+                    <li>{{ issue.title }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">No issues resolved yet.</p>
+        {% endif %}
+
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger mt-4">Logout</a>
+        <a href="{{ url_for('main.edit_ngo_profile') }}" class="btn btn-secondary mt-2">Edit Profile</a>
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}

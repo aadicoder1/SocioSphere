@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
-from app.models import IssueReport, NGOEvent
+from app.models import IssueReport, NGOEvent, User, Contribution ,Post
 from .extensions import db
 from flask_paginate import get_page_parameter
 import os
+from app.forms import PostForm 
 from werkzeug.utils import secure_filename
 from datetime import datetime, date
 
@@ -63,7 +64,7 @@ def ngo_dashboard():
 @login_required
 def update_status(issue_id):
     if current_user.role != 'ngo':
-        flash('Access denied.')
+        flash('Access denied.', 'danger')
         return redirect(url_for('main.user_dashboard'))
 
     new_status = request.form['status']
@@ -76,7 +77,7 @@ def update_status(issue_id):
         issue.resolved_by_id = None
 
     db.session.commit()
-    flash('Status updated successfully.')
+    flash('Status updated successfully.', 'success')
     return redirect(url_for('main.ngo_dashboard'))
 
 @main.route('/ngo/events/create', methods=['GET', 'POST'])
@@ -88,22 +89,22 @@ def create_event():
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form['description']
-        date = request.form['date']
+        date_str = request.form['date']
         location = request.form['location']
         image = request.files.get('image')
 
-        if not title or not description or not date or not location:
+        if not title or not description or not date_str or not location:
             flash("All fields except image are required.", "danger")
             return redirect(request.url)
 
         try:
-            event_date = datetime.strptime(date, '%Y-%m-%d').date()
+            event_date = datetime.strptime(date_str, '%Y-%m-%d').date()
         except ValueError:
             flash('Invalid date format. Please use YYYY-MM-DD.', 'danger')
             return redirect(request.url)
 
         image_filename = None
-        if image:
+        if image and image.filename:
             image_filename = secure_filename(image.filename)
             image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename))
 
@@ -217,3 +218,161 @@ def delete_event(event_id):
     db.session.commit()
     flash('Event deleted successfully.', 'success')
     return redirect(url_for('main.ngo_events'))
+
+
+
+
+@main.route('/user/<int:user_id>')
+@login_required
+def view_user_profile(user_id):
+    user = User.query.get_or_404(user_id)
+    posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
+    return render_template('profile/user_profile.html', user=user, posts=posts)
+
+@main.route('/ngo/<int:user_id>')
+@login_required
+def ngo_profile(user_id):
+    ngo = User.query.filter_by(id=user_id, role='ngo').first_or_404()
+    posts = Post.query.filter_by(user_id=ngo.id).order_by(Post.timestamp.desc()).all()
+    return render_template('profile/ngo_profile.html', ngo=ngo, posts=posts)
+
+
+
+@main.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    if current_user.role != 'user':
+        flash('Access denied.')
+        return redirect(url_for('main.user_dashboard'))
+
+    if request.method == 'POST':
+        # Update name
+        name = request.form.get('name')
+        if name:
+            current_user.name = name
+        # Update bio
+        bio = request.form.get('bio')
+        current_user.bio = bio
+        # Update profile photo
+        
+        # Handle photo upload
+        if 'photo' in request.files:
+            photo = request.files['photo']
+            if photo.filename != '':
+                filename = secure_filename(photo.filename)
+                photo.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                current_user.photo = filename
+            db.session.commit()
+
+        contrib_title = request.form.get('contrib_title')
+        contrib_desc = request.form.get('contrib_description')
+        if contrib_title:
+            new_contrib = Contribution(
+                user_id=current_user.id,
+                title=contrib_title,
+                description=contrib_desc
+            )
+            db.session.add(new_contrib)
+
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('main.view_user_profile', user_id=current_user.id))
+
+    return render_template('profile/edit_profile.html', user=current_user)
+
+@main.route('/edit_ngo_profile', methods=['GET', 'POST'])
+@login_required
+def edit_ngo_profile():
+    if current_user.role != 'ngo':
+        flash('Access denied.')
+        return redirect(url_for('main.ngo_dashboard'))
+
+    ngo = current_user  # assuming current_user is an NGO
+    if request.method == 'POST':
+        ngo.name = request.form['name']
+        ngo.email = request.form['email']
+        ngo.bio = request.form['bio']
+
+        # Handle photo upload
+        if 'photo' in request.files:
+            photo = request.files['photo']
+            if photo.filename != '':
+                filename = secure_filename(photo.filename)
+                photo.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                ngo.photo = filename
+
+        db.session.commit()
+        flash('NGO profile updated successfully!', 'success')
+        return redirect(url_for('main.ngo_profile', user_id=current_user.id))
+
+    return render_template('profile/edit_ngo_profile.html', ngo=ngo)
+
+
+
+
+@main.route('/create_post', methods=['POST'])
+@login_required
+def create_post():
+    title = request.form.get('title')
+    image = request.files.get('image')
+    file = request.files.get('file')
+
+    image_filename = None
+    file_filename = None
+
+    if image:
+        image_filename = secure_filename(image.filename)
+        image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename))
+
+    if file:
+        file_filename = secure_filename(file.filename)
+        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], file_filename))
+
+    new_post = Post(
+        title=title,
+        image_filename=image_filename,
+        file_filename=file_filename,
+        user_id=current_user.id
+    )
+
+    db.session.add(new_post)
+    db.session.commit()
+    flash('Post created successfully!', 'success')
+    return redirect(request.referrer or url_for('main.view_user_profile', user_id=current_user.id))
+
+
+
+
+@main.route('/post/edit/<int:post_id>', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    if post.user_id != current_user.id:
+        flash("You don't have permission to edit this post.", "danger")
+        return redirect(url_for('main.view_user_profile', user_id=current_user.id))
+
+    if request.method == 'POST':
+        post.title = request.form['title']
+        db.session.commit()
+        flash("Post updated successfully!", "success")
+        return redirect(url_for('main.view_user_profile', user_id=current_user.id))
+
+    return render_template('post/edit_post.html', post=post)
+
+
+
+
+@main.route('/post/delete/<int:post_id>', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    if post.user_id != current_user.id:
+        flash("You don't have permission to delete this post.", "danger")
+        return redirect(url_for('main.view_user_profile', user_id=current_user.id))
+
+    db.session.delete(post)
+    db.session.commit()
+    flash("Post deleted successfully!", "success")
+    return redirect(url_for('main.view_user_profile', user_id=current_user.id))
