@@ -65,6 +65,7 @@ class IssueReport(db.Model):
 
     # Resolved by (NGO user)
     resolved_by_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    resolved_by = db.relationship('User', foreign_keys=[resolved_by_id])
 
 
 class NGOEvent(db.Model):
