@@ -8,7 +8,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(100))
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(50))  # "user" or "ngo"
+    role = db.Column(db.String(50))  # "user" or "ngo" or "admin"
     bio = db.Column(db.Text)
     photo = db.Column(db.String(100))  # profile image filename
 

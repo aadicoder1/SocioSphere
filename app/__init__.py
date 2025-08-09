@@ -22,11 +22,13 @@ def create_app():
     from .report import report_bp
     from .auth import auth
     from .routes import main
+    from .admin import admin_bp
 
 
     app.register_blueprint(auth)
     app.register_blueprint(main)
     app.register_blueprint(report_bp)
+    app.register_blueprint(admin_bp)
     
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'

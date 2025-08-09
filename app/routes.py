@@ -130,7 +130,7 @@ def ngo_events():
     if current_user.role != 'ngo':
         return redirect(url_for('main.user_dashboard'))
 
-    events = NGOEvent.query.filter_by(created_by=current_user.id).order_by(NGOEvent.date.desc()).all()
+    events = NGOEvent.query
     return render_template('ngo_events.html', events=events)
 
 @main.route('/events')
@@ -254,6 +254,7 @@ def edit_profile():
         # Update bio
         bio = request.form.get('bio')
         current_user.bio = bio
+        
         # Update profile photo
         
         # Handle photo upload

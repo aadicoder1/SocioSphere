@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="container" style="width:90%;">
-    <h1 class="mt-4">Upcoming Events by NGOs</h1><br><br>
+    <h1 class="mt-4">Upcoming Events by us</h1><br><br>
 
     {% if events %}
         {% for event in events %}
             <div class="card mb-4">
                 <div class="card-body"><br>
-                    <h4 class="card-title">Event by: {{ event.creator.username if event.creator and event.creator.username else "Unknown" }}</h4>
+                    <h4 class="card-title">Event by: {{ event.created_by if event.created_by else "Unknown" }}</h4>
                     <hr>
                     <h5 class="card-title">Event name: {{ event.title }}</h5>
                     <h6 class="card-text"><strong>Date:</strong> {{ event.date.strftime('%d-%m-%Y') }}</h6>

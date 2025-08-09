@@ -18,16 +18,7 @@
             <h3>{{ user.name }}</h3>
             <p>{{ user.bio or "No bio available." }}</p>
 
-            <h5>Member of NGOs:</h5>
-            {% if user.ngos %}
-                <ul style="padding-left: 1rem;">
-                    {% for ngo in user.ngos %}
-                        <li><a href="{{ url_for('main.ngo_profile', ngo_id=ngo.id) }}">{{ ngo.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>Not a member of any NGO.</p>
-            {% endif %}
+            
         </div>
     </div>
 
