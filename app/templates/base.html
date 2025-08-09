@@ -145,11 +145,45 @@
     </div>
     <div class="menu-icon" onclick="toggleMenu()">☰</div>
     <nav class="nav-links" id="navMenu">
-        <a href="{{ url_for('main.user_dashboard') }}">Home</a>
-        <a href="{{ url_for('report.view_reports') }}">Reports</a>
-        <a href="{{ url_for('main.view_events') }}">Events</a>
+
+
+    {% if current_user.is_authenticated %}
+    {% if current_user.role == 'user' %}
+        <a href="{{ url_for('main.user_dashboard', user_id=current_user.id) }}">Home</a>
+    {% elif current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.dashboard', user_id=current_user.id) }}">Home</a>
+    {% endif %}
+{% else %}
+    <a href="{{ url_for('auth.login') }}">Login</a>
+{% endif %}
+
+
+    {% if current_user.is_authenticated %}
+    {% if current_user.role == 'user' or current_user.role == 'ngo' %}
+        <a href="{{ url_for('report.view_reports', user_id=current_user.id) }}">Reports</a>
+    {% elif current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.dashboard', user_id=current_user.id) }}#reports">Reports</a>
+    {% endif %}
+{% else %}
+    <a href="{{ url_for('auth.login') }}">Login</a>
+{% endif %}
+    
+
+
+    {% if current_user.is_authenticated %}
+    {% if current_user.role == 'user' or current_user.role == 'ngo' %}
+        <a href="{{ url_for('main.view_events', user_id=current_user.id) }}">Events</a>
+    {% elif current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.dashboard', user_id=current_user.id) }}#event">Events</a>
+    {% endif %}
+{% else %}
+    <a href="{{ url_for('auth.login') }}">Login</a>
+{% endif %}
         
-        {% if current_user.is_authenticated %}
+
+
+
+    {% if current_user.is_authenticated %}
     {% if current_user.role == 'ngo' %}
         <a href="{{ url_for('main.ngo_profile', user_id=current_user.id) }}">Profile</a>
     {% else %}

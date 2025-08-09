@@ -5,7 +5,7 @@
   <h2 class="mb-4 text-primary">Admin Dashboard</h2>
 
   <!-- Stats Chart -->
-  <canvas id="statsChart" height="100"></canvas>
+  <canvas id="statsChart" height="80"></canvas>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
   const ctx = document.getElementById('statsChart').getContext('2d');
@@ -65,7 +65,7 @@
   {% include 'admin/pagination.html' %}
 
   <!-- NGOS -->
-  <h3 class="mt-5 mb-3">NGO Events</h3>
+  <h3 class="mt-5 mb-3" id="event">NGO Events</h3>
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for event in ngos.items %}
     <div class="col">
@@ -85,7 +85,7 @@
   {% include 'admin/pagination.html' %}
 
   <!-- REPORTS -->
-  <h3 class="mt-5 mb-3">Issue Reports</h3>
+  <h3 class="mt-5 mb-3" id="reports">Reported Issues</h3>
   <ul class="list-group">
     {% for report in reports.items %}
       <li class="list-group-item">{{ report.issue }}</li>

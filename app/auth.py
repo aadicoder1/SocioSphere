@@ -54,6 +54,8 @@ def login():
             return redirect(next_page)
         elif user.role == 'ngo':
             return redirect(url_for('main.ngo_dashboard'))
+        elif user.role == 'admin':
+            return redirect(url_for('admin.dashboard'))
         else:
             return redirect(url_for('main.user_dashboard'))
 

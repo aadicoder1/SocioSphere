@@ -70,6 +70,8 @@ def update_status(issue_id):
     if current_user.role != 'ngo':
         flash('Access denied.', 'danger')
         return redirect(url_for('main.user_dashboard'))
+    elif current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
 
     new_status = request.form['status']
     issue = IssueReport.query.get_or_404(issue_id)
@@ -89,6 +91,8 @@ def update_status(issue_id):
 def create_event():
     if current_user.role != 'ngo':
         return redirect(url_for('main.user_dashboard'))
+    elif current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
 
     if request.method == 'POST':
         title = request.form.get('title')
@@ -133,6 +137,8 @@ def create_event():
 def ngo_events():
     if current_user.role != 'ngo':
         return redirect(url_for('main.user_dashboard'))
+    elif current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
 
     events = NGOEvent.query
     return render_template('ngo_events.html', events=events)
@@ -142,6 +148,8 @@ def ngo_events():
 def view_events():
     if current_user.role != 'user':
         return redirect(url_for('main.ngo_events'))
+    elif current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
 
     today = date.today()
     past_events = NGOEvent.query.filter(NGOEvent.date < today).all()
@@ -246,9 +254,12 @@ def ngo_profile(user_id):
 @main.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    if current_user.role != 'user':
+    
+#    if current_user.role == 'admin':
+#       return redirect(url_for('admin.dashboard'))
+    if current_user.role == 'ngo':
         flash('Access denied.')
-        return redirect(url_for('main.user_dashboard'))
+        return redirect(url_for('main.ngo_dashboard'))
 
     if request.method == 'POST':
         # Update name
@@ -289,9 +300,10 @@ def edit_profile():
 @main.route('/edit_ngo_profile', methods=['GET', 'POST'])
 @login_required
 def edit_ngo_profile():
-    if current_user.role != 'ngo':
+    if current_user.role == 'user':
         flash('Access denied.')
-        return redirect(url_for('main.ngo_dashboard'))
+        return redirect(url_for('main.user_dashboard'))
+    
 
     ngo = current_user  # assuming current_user is an NGO
     if request.method == 'POST':
