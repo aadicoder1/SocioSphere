@@ -1,0 +1,25 @@
+<nav>
+  <ul class="pagination mt-3">
+    {% if pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="?{{ param }}={{ pagination.prev_num }}">Previous</a>
+      </li>
+    {% endif %}
+
+    {% for page_num in pagination.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+      {% if page_num %}
+        <li class="page-item {% if pagination.page == page_num %}active{% endif %}">
+          <a class="page-link" href="?{{ param }}={{ page_num }}">{{ page_num }}</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?{{ param }}={{ pagination.next_num }}">Next</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>

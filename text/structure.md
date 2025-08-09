@@ -120,3 +120,30 @@ SocioSphere/
 │
 ├── instance/
 │ └── sociosphere.db
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from app.extensions import db
+from app.models import User
+
+# Find the user by username or email
+user = User.query.filter_by(username='aadicoder1').first()
+
+# Check if user found
+if user:
+    user.role = 'admin'  # assign admin role
+    db.session.commit()  # save changes
+    print("User role updated successfully.")
+else:
+    print("User not found.")

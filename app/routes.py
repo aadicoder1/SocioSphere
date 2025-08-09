@@ -19,6 +19,8 @@ def index():
 def user_dashboard():
     if current_user.role != 'user':
         return redirect(url_for('main.ngo_dashboard'))
+    elif current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
 
     events = NGOEvent.query.order_by(NGOEvent.date.desc()).all()
     return render_template('user_dashboard.html', name=current_user.username, events=events)
@@ -28,6 +30,8 @@ def user_dashboard():
 def ngo_dashboard():
     if current_user.role != 'ngo':
         return redirect(url_for('main.user_dashboard'))
+    elif current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
 
     filter_status = request.args.get('status')
     page = request.args.get(get_page_parameter(), type=int, default=1)
