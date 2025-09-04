@@ -148,13 +148,13 @@
 
 
     {% if current_user.is_authenticated %}
-    {% if current_user.role == 'user' %}
+    {% if current_user.role == 'user' or current_user.role == 'ngo' %}
         <a href="{{ url_for('main.user_dashboard', user_id=current_user.id) }}">Home</a>
     {% elif current_user.role == 'admin' %}
         <a href="{{ url_for('admin.dashboard', user_id=current_user.id) }}">Home</a>
     {% endif %}
 {% else %}
-    <a href="{{ url_for('auth.login') }}">Login</a>
+    <a href="{{ url_for('auth.login') }}">Home</a>
 {% endif %}
 
 
@@ -165,7 +165,7 @@
         <a href="{{ url_for('admin.dashboard', user_id=current_user.id) }}#reports">Reports</a>
     {% endif %}
 {% else %}
-    <a href="{{ url_for('auth.login') }}">Login</a>
+    <a href="{{ url_for('auth.login') }}">Reports</a>
 {% endif %}
     
 
@@ -177,7 +177,7 @@
         <a href="{{ url_for('admin.dashboard', user_id=current_user.id) }}#event">Events</a>
     {% endif %}
 {% else %}
-    <a href="{{ url_for('auth.login') }}">Login</a>
+    <a href="{{ url_for('auth.login') }}">Events</a>
 {% endif %}
         
 
@@ -190,7 +190,7 @@
         <a href="{{ url_for('main.view_user_profile', user_id=current_user.id) }}">Profile</a>
     {% endif %}
 {% else %}
-    <a href="{{ url_for('auth.login') }}">Login</a>
+    <a href="{{ url_for('auth.login') }}">Profile</a>
 {% endif %}
 
 
