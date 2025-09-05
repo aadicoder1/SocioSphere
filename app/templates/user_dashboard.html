@@ -68,35 +68,69 @@
 
   <!-- Posts Section -->
 <div class="card mt-5 p-4 shadow-lg">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="mb-0">Latest Posts</h3>
-      <a href="{{ url_for('main.create_post') }}" class="btn btn-primary btn-sm">+ Create Post</a>
-    </div>
-
-    {% if posts %}
-    <div class="d-flex overflow-auto" style="gap: 15px; padding-bottom: 10px;">
-      {% for post in posts %}
-      <div class="card shadow-sm" style="min-width: 250px; max-width: 250px; flex: 0 0 auto;">
-        <div class="card-body">
-          <h5 class="card-title">{{ post.title }}</h5>
-          <small class="text-muted">By {{ post.user.username }} on {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
-          <hr>
-          {% if post.image_filename %}
-            <img src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" 
-                 class="img-fluid rounded mb-2" 
-                 style="max-height: 150px; object-fit: cover;">
-          {% endif %}
-          {% if post.file_filename %}
-            <p><a href="{{ url_for('static', filename='uploads/' ~ post.file_filename) }}" target="_blank">Download File</a></p>
-          {% endif %}
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-      <p class="text-muted">No posts yet. Be the first to share something!</p>
-    {% endif %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Latest Posts</h3>
   </div>
+
+  <!-- Button to show/hide post form -->
+  <button class="btn btn-success mb-3" id="showPostFormBtn">➕ Create Post</button>
+
+  <!-- Hidden form -->
+  <form method="POST" action="{{ url_for('main.create_post') }}" enctype="multipart/form-data" id="postForm" style="display: none;" class="mb-4">
+      <div class="mb-3">
+          <label for="title" class="form-label">Post Title</label>
+          <input type="text" class="form-control" name="title" id="title" required>
+      </div>
+      <div class="mb-3">
+          <label for="image" class="form-label">Upload Image (optional)</label>
+          <input type="file" class="form-control" name="image" id="image" accept="image/*">
+      </div>
+      <div class="mb-3">
+          <label for="file" class="form-label">Upload File (optional)</label>
+          <input type="file" class="form-control" name="file" id="file">
+      </div>
+      <button type="submit" class="btn btn-primary">Post</button>
+  </form>
+
+  <script>
+      document.getElementById("showPostFormBtn").addEventListener("click", function () {
+          const form = document.getElementById("postForm");
+          const button = this;
+          if (form.style.display === "none") {
+              $(form).slideDown();
+              button.innerHTML = "✖️ Close Form";
+          } else {
+              $(form).slideUp();
+              button.innerHTML = "➕ Create Post";
+          }
+      });
+  </script>
+
+  <!-- Posts list -->
+  {% if posts %}
+  <div class="d-flex overflow-auto" style="gap: 15px; padding-bottom: 10px;">
+    {% for post in posts %}
+    <div class="card shadow-sm" style="min-width: 250px; max-width: 250px; flex: 0 0 auto;">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <small class="text-muted">By {{ post.user.username }} on {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
+        <hr>
+        {% if post.image_filename %}
+          <img src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" 
+               class="img-fluid rounded mb-2" 
+               style="max-height: 150px; object-fit: cover;">
+        {% endif %}
+        {% if post.file_filename %}
+          <p><a href="{{ url_for('static', filename='uploads/' ~ post.file_filename) }}" target="_blank">Download File</a></p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p class="text-muted">No posts yet. Be the first to share something!</p>
+  {% endif %}
+</div>
 
 </div>
 {% endblock %}
