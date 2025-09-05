@@ -22,8 +22,19 @@ def user_dashboard():
     elif current_user.role == 'admin':
         return redirect(url_for('admin.dashboard'))
 
+    # Fetch latest events
     events = NGOEvent.query.order_by(NGOEvent.date.desc()).all()
-    return render_template('user_dashboard.html', name=current_user.username, events=events)
+
+    # Fetch latest posts
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+
+    return render_template(
+        'user_dashboard.html',
+        name=current_user.username,
+        events=events,
+        posts=posts
+    )
+
 
 @main.route('/ngo/dashboard')
 @login_required

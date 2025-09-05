@@ -25,12 +25,13 @@
     <h2 class="mb-3">Welcome, {{ name }}</h2>
     <p>This is your dashboard to raise complaints and track welfare requests.</p>
     <div>
-    <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.my_reports') }}" style="text-decoration: none;width:170px;">
-      My Issues
-    </a>
-    <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.report_issue') }}" style="text-decoration: none;width:170px;">
-      Report an Issue
-    </a></div>
+      <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.my_reports') }}" style="text-decoration: none;width:170px;">
+        My Issues
+      </a>
+      <a class="btn btn-outline-primary mt-3" href="{{ url_for('report.report_issue') }}" style="text-decoration: none;width:170px;">
+        Report an Issue
+      </a>
+    </div>
   </div>
 
   {% if events %}
@@ -38,11 +39,11 @@
     <div class="carousel-inner">
       {% for event in events %}
       <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-        <img  src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}" class="d-block w-100 rounded" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">
+        <img src="{{ url_for('static', filename='uploads/' ~ event.image_filename) }}" class="d-block w-100 rounded" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">
         <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
           <h5>{{ event.title }}</h5>
           <p>{{ event.date }}</p>
-          <a href="{{ url_for('main.event_detail', event_id=event.id) }}" >View Details</a>
+          <a href="{{ url_for('main.event_detail', event_id=event.id) }}">View Details</a>
         </div>
       </div>
       {% endfor %}
@@ -53,6 +54,30 @@
     <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
     </button>
+  </div>
+  {% endif %}
+
+  <!-- Posts Section -->
+  {% if posts %}
+  <div class="mt-5">
+    <h3 class="mb-3">Latest Posts</h3>
+    <div class="d-flex overflow-auto" style="gap: 15px; padding-bottom: 10px;">
+      {% for post in posts %}
+      <div class="card shadow-sm" style="min-width: 250px; max-width: 250px; flex: 0 0 auto;">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <small class="text-muted">By {{ post.user.username }} on {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
+          <hr>
+          {% if post.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' ~ post.image_filename) }}" class="img-fluid rounded mb-2" style="max-height: 150px; object-fit: cover;">
+          {% endif %}
+          {% if post.file_filename %}
+            <p><a href="{{ url_for('static', filename='uploads/' ~ post.file_filename) }}" target="_blank">Download File</a></p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
   {% endif %}
 </div>
